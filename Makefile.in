@@ -117,6 +117,9 @@ C_SRCS := $(srcroot)src/jemalloc.c \
 	$(srcroot)src/ticker.c \
 	$(srcroot)src/tsd.c \
 	$(srcroot)src/witness.c
+ifneq ($(OS),Windows_NT)
+	C_SRCS += $(srcroot)src/wrap_memcpy.c
+endif
 ifeq ($(enable_zone_allocator), 1)
 C_SRCS += $(srcroot)src/zone.c
 endif
