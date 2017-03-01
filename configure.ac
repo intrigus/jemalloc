@@ -244,7 +244,7 @@ if test "x$GCC" = "xyes" ; then
   JE_CFLAGS_ADD([-Wsign-compare])
   JE_CFLAGS_ADD([-Wundef])
   JE_CFLAGS_ADD([-pipe])
-  JE_CFLAGS_ADD([-g3])
+  dnl JE_CFLAGS_ADD([-g3])
 elif test "x$je_cv_msvc" = "xyes" ; then
   CC="$CC -nologo"
   JE_CFLAGS_ADD([-Zi])
