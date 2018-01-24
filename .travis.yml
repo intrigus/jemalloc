@@ -1,4 +1,8 @@
 sudo: false
+
+services:
+  - docker
+  
 env:
   global:
   - secure: "YEssttXkPhcgn/5uC8VmWPd96nFy0Ke3w8YzwoRTcEUpFsx2GtK9NAC90w1+h/LyGOBQo2QhV8Ao9uivYkXK5NhAUaiHIXAsrEO1nhTwsl0rHM9NjkVI8KjhqAY72BtQEoAPqb01I8mwvl9PYW4fNzU9M4k/rX+Sc6a/V68DNHiISkWafXyS6xcKlurbCMuBbdVjOc63vgCOrNG8e84HvSGb6L/8ovTTdl4qMrWFdEZ+Pd9sg0lzIpvSYyoLfmdo4NoJXk6mhHCtFKDDHJkUdZzNdhCgfEO731Ii3OpRhtkdjfHthDu+V+fCFKIzbxsQyh979JRLY4yGdDaftoju1E4r2/A2CMO3I744WqEPYhMcYcbX5iVotn3TjGDFNGpdptu5X2BLXBvbW0/De/gY67Pb0tsjb6wWhbZjVttB9h8Sa7COx9cT8AUie08C24sK462Yk9FHo6X3gVNqn0tnIVtU1RDhDoFhUkljkRJq/S/DXxeZ/pBcgVz3En7zvwMJxydHLjPHSpl3GiBs4xT3KpAjg9XdudjkuKnx+OBm2hbRPM6XX8bcwcYZtsG46lp5Qpy9f0UcnB12xFDxgs5miJnF/7/UEia9cA0d7Rt7e3FNRcVFHINOGVYcwCsUC14dVmD2gNxOhZptgh5zbTmueVF11VhXt7RioWis/l3y9ZE="
@@ -6,22 +10,22 @@ env:
 language: c
 compiler: gcc
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-6
-
 before_install:
 - pip install --user awscli
-- export PATH=$PATH:$HOME/.local/bin
+- docker pull intrigus/docker-raspberry-pi-cross-compiler
+- docker run intrigus/docker-raspberry-pi-cross-compiler > ~/bin/rpxc
+- chmod +x ~/bin/rpxc
+- export PATH=$PATH:$HOME/bin:$HOME/.local/bin
+- export RPXC_IMAGE=intrigus/docker-raspberry-pi-cross-compiler
+- echo "PKG_CONFIG_DIR=" >> .lwjgl_env_rpxc
+- echo "PKG_CONFIG_LIBDIR=${LWJGL_BUILD_SYSROOT}/usr/lib/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/share/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/lib/arm-linux-gnueabihf/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/share/arm-linux-gnueabihf/pkgconfig" >> .lwjgl_env_rpxc
+- echo "PKG_CONFIG_SYSROOT_DIR=${LWJGL_BUILD_SYSROOT}" >> .lwjgl_env_rpxc
 
 script:
-- "CFLAGS=\"-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0\" LDFLAGS=-Wl,--wrap,memcpy ./autogen.sh --with-jemalloc-prefix=je_ --enable-lazy-lock --disable-stats --disable-fill"
-- CC="gcc-6" make
+- rpxc --args "--env-file .lwjgl_env_rpxc" bash -c '"CFLAGS=\"-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0\" ./autogen.sh --with-jemalloc-prefix=je_ --enable-lazy-lock --disable-stats --disable-fill"'
+- rpxc --args "--env-file .lwjgl_env_rpxc" bash -c 'CC="arm-linux-gnueabihf-gcc" make'
 - cd lib
-- strip libjemalloc.so
-- "aws s3 cp libjemalloc.so s3://build.lwjgl.org/nightly/linux/x64/libjemalloc.so --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
-- "git log --pretty=format:%H HEAD~2..HEAD~1 | head -n 1 > revision.git"
-- "aws s3 cp revision.git s3://build.lwjgl.org/nightly/linux/x64/libjemalloc.so.git --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
+- rpxc --args "--env-file .lwjgl_env_rpxc" bash -c 'arm-linux-gnueabihf-strip libjemalloc.so'
+#- "aws s3 cp libjemalloc.so s3://build.lwjgl.org/nightly/linux/x64/libjemalloc.so --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
+#- "git log --pretty=format:%H HEAD~2..HEAD~1 | head -n 1 > revision.git"
+#- "aws s3 cp revision.git s3://build.lwjgl.org/nightly/linux/x64/libjemalloc.so.git --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
