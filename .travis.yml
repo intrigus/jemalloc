@@ -24,7 +24,7 @@ script:
 - echo "PKG_CONFIG_LIBDIR=${LWJGL_BUILD_SYSROOT}/usr/lib/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/share/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/lib/arm-linux-gnueabihf/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/share/arm-linux-gnueabihf/pkgconfig" >> .lwjgl_env_rpxc
 - echo "PKG_CONFIG_SYSROOT_DIR=${LWJGL_BUILD_SYSROOT}" >> .lwjgl_env_rpxc
 - echo 'export CC=arm-linux-gnueabihf-gcc;export CXX=arm-linux-gnueabihf-g++;export LD=arm-linux-gnueabihf-ld;export AR=arm-linux-gnueabihf-ar;export AS=arm-linux-gnueabihf-as;export NM=arm-linux-gnueabihf-nm;export STRIP=arm-linux-gnueabihf-strip;export RANLIB=arm-linux-gnueabihf-ranlib;export OBJDUMP=arm-linux-gnueabihf-objdump' >> tempScript.sh
-- echo 'CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0" ./autogen.sh --target=arm-linux-gnueabihf --with-jemalloc-prefix=je_ --enable-lazy-lock --disable-stats --disable-fill' >> tempScript.sh
+- echo 'CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0" ./autogen.sh --host=x86_64-unknown-linux-gnu --build=x86_64-unknown-linux-gnu --target=arm-linux-gnueabihf --with-jemalloc-prefix=je_ --enable-lazy-lock --disable-stats --disable-fill' >> tempScript.sh
 - echo 'make' >> tempScript.sh
 - echo 'cd lib' >> tempScript.sh
 - echo 'arm-linux-gnueabihf-strip libjemalloc.so' >> tempScript.sh
