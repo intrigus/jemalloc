@@ -23,7 +23,7 @@ script:
 - echo "PKG_CONFIG_DIR=" >> .lwjgl_env_rpxc
 - echo "PKG_CONFIG_LIBDIR=${LWJGL_BUILD_SYSROOT}/usr/lib/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/share/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/lib/arm-linux-gnueabihf/pkgconfig:${LWJGL_BUILD_SYSROOT}/usr/share/arm-linux-gnueabihf/pkgconfig" >> .lwjgl_env_rpxc
 - echo "PKG_CONFIG_SYSROOT_DIR=${LWJGL_BUILD_SYSROOT}" >> .lwjgl_env_rpxc
-- echo '"CFLAGS=\"-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0\" ./autogen.sh --with-jemalloc-prefix=je_ --enable-lazy-lock --disable-stats --disable-fill"' >> tempScript.sh
+- echo 'CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0" ./autogen.sh --with-jemalloc-prefix=je_ --enable-lazy-lock --disable-stats --disable-fill' >> tempScript.sh
 - echo 'CC="arm-linux-gnueabihf-gcc" make' >> tempScript.sh
 - echo 'cd lib' >> tempScript.sh
 - echo 'arm-linux-gnueabihf-strip libjemalloc.so' >> tempScript.sh
